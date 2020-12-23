@@ -1,54 +1,29 @@
-use actix_web::{get, web, HttpResponse, Result};
-use serde::{Deserialize, Serialize};
+use actix_web::{middleware, App, HttpServer};
+use env_logger::Env;
 
-#[derive(Serialize, Deserialize)]
-struct Task {
-    id: u8,
-    title: String,
-    is_completed: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-struct TaskList {
-    tasks: Vec<Task>,
-}
-
-#[get("/")]
-async fn index(data: web::Data<TaskList>) -> Result<HttpResponse> {
-    Ok(HttpResponse::Ok().json(&data.tasks))
-}
-
-#[get("/{id}")]
-async fn get_task(
-    web::Path(id): web::Path<usize>,
-    data: web::Data<TaskList>,
-) -> Result<HttpResponse> {
-    let task = &data.tasks[id];
-    Ok(HttpResponse::Ok().json(task))
-}
+mod task;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use actix_web::{App, HttpServer};
-
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
     HttpServer::new(|| {
         App::new()
-            .data(TaskList {
+            .wrap(middleware::Logger::default())
+            .data(task::TaskList {
                 tasks: vec![
-                    Task {
+                    task::Task {
                         id: 0,
                         title: "Learn Rust".to_string(),
                         is_completed: false,
                     },
-                    Task {
+                    task::Task {
                         id: 1,
                         title: "Learn Actix".to_string(),
                         is_completed: false,
                     },
                 ],
             })
-            .service(index)
-            .service(get_task)
+            .configure(task::init)
     })
     .bind("127.0.0.1:8000")?
     .run()
