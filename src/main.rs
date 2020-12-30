@@ -1,6 +1,8 @@
 use std::env;
 use std::sync::Mutex;
 
+use actix_cors::Cors;
+use actix_web::http::header::{AUTHORIZATION, CONTENT_TYPE};
 use actix_web::{middleware, web, App, HttpServer};
 use env_logger::Env;
 
@@ -13,6 +15,7 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
 
     let addr = env::var("BASE_URL").unwrap();
+    let client_addr = env::var("CLIENT_URL").ok();
 
     let tasks = web::Data::new(task::TaskList {
         tasks: Mutex::new(vec![
@@ -30,8 +33,21 @@ async fn main() -> std::io::Result<()> {
     });
 
     HttpServer::new(move || {
+        let cors = match &client_addr {
+            Some(ref origin) => Cors::default()
+                .allowed_origin(origin)
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![AUTHORIZATION, CONTENT_TYPE])
+                .max_age(3600),
+            None => Cors::default()
+                .allowed_origin("*")
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![AUTHORIZATION, CONTENT_TYPE])
+                .max_age(3600),
+        };
         App::new()
             .wrap(middleware::Logger::default())
+            .wrap(cors)
             .app_data(tasks.clone())
             .configure(task::init)
     })
