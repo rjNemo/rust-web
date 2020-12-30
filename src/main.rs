@@ -1,3 +1,4 @@
+use std::env;
 use std::sync::Mutex;
 
 use actix_web::{middleware, web, App, HttpServer};
@@ -9,6 +10,9 @@ mod task;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    dotenv::dotenv().ok();
+
+    let addr = env::var("BASE_URL").unwrap();
 
     let tasks = web::Data::new(task::TaskList {
         tasks: Mutex::new(vec![
@@ -31,7 +35,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(tasks.clone())
             .configure(task::init)
     })
-    .bind("127.0.0.1:8000")?
+    .bind(addr)?
     .run()
     .await
 }

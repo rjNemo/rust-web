@@ -8,5 +8,6 @@ edition = "2018"
 
 [dependencies]
 actix-web = "3"
-serde = "1.0.118"
+dotenv = "0.15.0"
 env_logger = "0.8.2"
+serde = "1.0.118"
