@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::sync::Mutex;
 
 /// Task model
 #[derive(Serialize, Deserialize)]
@@ -39,5 +40,5 @@ pub struct NewTask {
 /// The actual task container.
 #[derive(Serialize, Deserialize)]
 pub struct TaskList {
-    pub tasks: Vec<Task>,
+    pub tasks: Mutex<Vec<Task>>,
 }

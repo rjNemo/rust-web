@@ -29,17 +29,17 @@ async fn get_task(
     web::Path(id): web::Path<usize>,
     data: web::Data<TaskList>,
 ) -> Result<HttpResponse> {
-    let task = &data.tasks[id];
+    let task = &data.tasks.lock().unwrap()[id];
     Ok(HttpResponse::Ok().json(task))
 }
 
 /// Creates and stores a new `Task`
 #[post("/")]
 async fn add_task(form: web::Form<NewTask>, data: web::Data<TaskList>) -> Result<HttpResponse> {
-    let id = data.tasks.len();
+    let id = data.tasks.lock().unwrap().len();
     let new_task = Task::new(id, form.title.clone());
-    // data.tasks.push(new_task);
-    Ok(HttpResponse::Ok().json(new_task))
+    data.tasks.lock().unwrap().push(new_task);
+    Ok(HttpResponse::Ok().status(StatusCode::CREATED).json(id))
 }
 
 /// Closes the given task if open, otherwise return an bad request
@@ -48,7 +48,7 @@ async fn close_task(
     web::Path(id): web::Path<usize>,
     data: web::Data<TaskList>,
 ) -> Result<HttpResponse> {
-    let task = &data.tasks[id];
+    let task = &data.tasks.lock().unwrap()[id];
     if task.is_completed {
         Ok(HttpResponse::new(StatusCode::BAD_REQUEST))
     } else {
