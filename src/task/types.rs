@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
+
+use serde::{Deserialize, Serialize};
 
 /// Task model
 #[derive(Serialize, Deserialize)]
