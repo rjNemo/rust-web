@@ -1,43 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-        body {
-            max-width: 70ch;
-            margin: auto;
-            padding: 3em 1em;
-            line-height: 1.75;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-            font-size: 1.25em;
-            color: #444
-        }
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.classless.min.css">
 
-        h1, h2, h3, h4, h5, h6 {
-            line-height: 1.2;
-            margin: 3em 0 1em;
-        }
-
-        p, ul, ol {
-            margin-bottom: 2em;
-            color: #1d1d1d;
-            font-family: sans-serif;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            body {
-                color: white;
-                background: #444
-            }
-
-            a:link {
-                color: #5bf
-            }
-
-            a:visited {
-                color: #ccf
-            }
-        }
-    </style>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
@@ -46,10 +11,12 @@
     <title>Rust client</title>
 </head>
 <body>
-<h1>Rust client</h1>
-<pre id="result">
-    hi
-</pre>
+<main>
+    <h1>Rust client</h1>
+    <pre id="result">
+        hi
+    </pre>
+</main>
 </body>
 <script>
     const consoleSignatureStyle = "font-size: 16px;" +
@@ -67,5 +34,6 @@
     fetch("http://localhost:8000/")
         .then(res => res.json())
         .then(json => data.innerHTML = JSON.stringify(json, null, 2))
+
 </script>
 </html>
